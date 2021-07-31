@@ -3,7 +3,9 @@ const User = require("../models/user");
 const cart = require("../models/cart");
 
 const bcrypt = require('bcryptjs');
-
+const jwt    = require('jsonwebtoken');
+let userData ;
+const config = require('../util/config');
 exports.postSignup = (req,res,next) => {
 const email           = req.body.email;
 const name           = req.body.name;
@@ -26,10 +28,14 @@ return bcrypt.hash(password,12);
     });
 })
 .then(userRes => {
+    userData = userRes;
   return  userRes.createCart();
 })
 .then(cart => {
-    res.status(200).json('Signed up successfully');
+    var token = jwt.sign({id: userData.id },config.secret,{
+        expiresIn : 86400 //expires in 24 hours
+    })
+    res.status(200).json({mag :'Signed up successfully', token : token});
 })
 .catch(err => {
 next(err);
@@ -44,10 +50,14 @@ User.findOne({where: {email : email}})
     if(!user){
         res.status(401).json({msg : 'Invalid Email or Password'})
     }
+    userData = user;
     bcrypt.compare(password,user.password)
     .then(resmatching => {
         if(resmatching) {
-            res.status(200).json({msg : 'Succesfully Logged In'})
+            var token = jwt.sign({id: userData.id },config.secret,{
+                expiresIn : 86400 //expires in 24 hours
+            })
+            res.status(200).json({msg : 'Succesfully Logged In',token : token})
         } else {
         res.status(401).json({msg : 'Invalid Email or Password'})  
         }      
@@ -60,7 +70,7 @@ User.findOne({where: {email : email}})
 } 
 
 exports.postLogout = (req,res,next) => {
-    
+res.status(200).json(req.userId)
 } 
 
 exports.postReset = (req,res,next) => {
