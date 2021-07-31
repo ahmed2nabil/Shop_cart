@@ -5,11 +5,12 @@ exports.postAddProduct = (req, res, next) => {
   const imageUrl = req.body.imageUrl;
   const price = req.body.price;
   const description = req.body.description;
-  Product.create({
+Product.create({
     title : title,
     price : price,
     imageUrl : imageUrl,
-    description : description
+    description : description,
+    userId : req.userId
   })
   .then((result)=> {
     res.status(201).json({msg: "Product Created"});
@@ -27,14 +28,17 @@ exports.putEditProduct = (req, res, next) => {
   const updatedDesc = req.body.description;
 Product.findByPk(prodId)
 .then(prod => {
+  if(req.userId !== prod.userId){
+    res.status(403).json({msg:'You are not allowed to do that'})
+  } else {
 prod.title = updatedTitle;
 prod.price = updatedPrice;
 prod.description = updatedDesc;
 prod.imageUrl = updatedImageUrl;
-return prod.save();
-})
-.then(result => {
+ prod.save().then(result => {
   res.status(200).json({msg:'Updated',prod : result})
+}).catch(err => { res.status(404).json(err); })
+  }
 })
 .catch(err => {
 res.status(404).json(err);
@@ -64,12 +68,16 @@ exports.deleteProduct = (req, res, next) => {
   const prodId = req.body.productId;
   Product.findByPk(prodId)
   .then(prod => {
-    return prod.destroy();
+    if(req.userId !== prod.userId){
+      res.status(403).json({msg:'You are not allowed to do that'})
+    }
+    else {
+      prod.destroy()
+      .then(result => {
+        res.status(200).json('DELETED');
+      })
+   .catch((err)=> {  res.status(404).json(err); });
+    }
   })
-  .then(result => {
-    res.status(200).json('DELETED');
-  })
-  .catch((err)=> {
-    res.status(404).json(err);
-  });
+ .catch((err)=> {  res.status(404).json(err); });
 };

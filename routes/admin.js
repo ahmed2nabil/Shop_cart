@@ -1,6 +1,7 @@
 const express = require('express');
 const Product = require('../models/product');
 const adminController = require('../controllers/admin');
+const { verfiyToken } = require('../middlewares/verfiyToken');
 
 const router = express.Router();
 
@@ -11,12 +12,12 @@ const router = express.Router();
 router.get('/products', adminController.getProducts);
 
 // /admin/add-product => POST
-router.post('/add-product', adminController.postAddProduct);
+router.post('/add-product', verfiyToken,adminController.postAddProduct);
 
 // router.get('/edit-product/:productId', adminController.getEditProduct);
 
-router.put('/edit-product', adminController.putEditProduct);
+router.put('/edit-product',verfiyToken, adminController.putEditProduct);
 
-router.delete('/delete-product', adminController.deleteProduct);
+router.delete('/delete-product',verfiyToken, adminController.deleteProduct);
 
 module.exports = router;

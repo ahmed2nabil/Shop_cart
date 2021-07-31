@@ -35,7 +35,7 @@ return bcrypt.hash(password,12);
     var token = jwt.sign({id: userData.id },config.secret,{
         expiresIn : 86400 //expires in 24 hours
     })
-    res.status(200).json({mag :'Signed up successfully', token : token});
+    res.status(200).json({mag :'Signed up successfully', token : token,userId :userData.id,cartId :userData.cartId});
 })
 .catch(err => {
 next(err);

@@ -3,6 +3,8 @@ const User = require('../models/user');
 const config = require('../util/config');
 
 exports.verfiyToken = (req,res,next) => {
+    if(!req.headers['authorization'])
+    return res.status(403).json({msg: "No token provided"});
 var token = req.headers['authorization'].split(' ')[1];
 
 if(!token) 

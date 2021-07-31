@@ -48,16 +48,20 @@ exports.getIndex = (req, res, next) => {
     });
     res.status(200).json(prods);
   })
-  .catch((err)=> {
-    res.status(404).json(err);
-  });
+  .catch((err)=> {res.status(404).json(err); });
 };
 
 exports.getCart = (req, res, next) => {
-Cart.find()
-.then(cart => {
-  Product.find()
-})
+  req.userId.getCart()
+    .then(cart => {
+      return cart
+        .getProducts()
+        .then(products => {
+          res.status(200).json(products);
+                })
+        .catch((err)=> {res.status(404).json(err); });
+    })
+    .catch((err)=> {res.status(404).json(err); });
 };
 
 exports.postCart = (req, res, next) => {
