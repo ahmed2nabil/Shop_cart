@@ -37,7 +37,7 @@ return prod.save();
   res.status(200).json({msg:'Updated',prod : result})
 })
 .catch(err => {
-res.status(400).json(err);
+res.status(404).json(err);
 })
 };
 
@@ -60,7 +60,7 @@ Product.findAll()
 });
 };
 
-exports.DeleteProduct = (req, res, next) => {
+exports.deleteProduct = (req, res, next) => {
   const prodId = req.body.productId;
   Product.findByPk(prodId)
   .then(prod => {
