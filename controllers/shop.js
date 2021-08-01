@@ -52,7 +52,7 @@ exports.getIndex = (req, res, next) => {
 };
 
 exports.getCart = (req, res, next) => {
-  req.userId.getCart()
+  Cart.findOne({where: {userId : req.userId}})
     .then(cart => {
       return cart
         .getProducts()
@@ -68,8 +68,9 @@ exports.postCart = (req, res, next) => {
 const prodId  = req.body.productId
   let fetchedCart;
 let newQuantity = 1;
-Cart.findByPk(req.cartId)
+Cart.findOne({where :{userId : req.userId}})
 .then(cart => {
+
   fetchedCart = cart;
   return cart.getProducts({where : { id : prodId}});
 })
@@ -82,28 +83,35 @@ Cart.findByPk(req.cartId)
     const oldQuantity = product.cartItem.quantity;
     newQuantity += oldQuantity;
   return product;
-  }
-return Product.findByPk(prodId)
+  } 
+  return Product.findByPk(prodId)
+})
 .then(product => {
   return fetchedCart.addProduct(product , {
     through : {quantity : newQuantity}
   })
 })
-.catch(err => { res.status(400).json(err)})
-})
 .then(data => {
-  res.status(200).json(data);
+  res.status(200).json({msg : "added to the Cart",data:data});
 })
-.catch(err => { res.status(400).json(err)})
+.catch(err => { res.status(403).json(err)})
 
 };
 
 exports.postCartDeleteProduct = (req, res, next) => {
   const prodId = req.body.productId;
-  Product.findById(prodId, product => {
-    Cart.deleteProduct(prodId, product.price);
-    res.redirect('/cart');
-  });
+ Cart.findOne({where : {userId : req.userId}})
+    .then(cart => {
+      return cart.getProducts({ where: { id: prodId } });
+    })
+    .then(products => {
+      const product = products[0];
+      return product.cartItem.destroy();
+    })
+    .then(result => {
+      res.redirect('/cart');
+    })
+    .catch(err => console.log(err));
 };
 
 exports.postOrders = (req, res, next) => {

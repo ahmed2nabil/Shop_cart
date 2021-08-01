@@ -14,9 +14,9 @@ router.get('/products/:productId', shopController.getProduct);
 
 router.get('/cart',verfiyToken, shopController.getCart);
 
-router.post('/cart', shopController.postCart);
+router.post('/cart', verfiyToken,shopController.postCart);
 
-router.post('/cart-delete-item', shopController.postCartDeleteProduct);
+router.delete('/cart-delete-item', verfiyToken,shopController.postCartDeleteProduct);
 
 router.get('/orders', shopController.getOrders);
 
