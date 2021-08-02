@@ -1,5 +1,8 @@
 const Product = require('../models/product');
 const Cart = require('../models/cart');
+const Order = require('../models/order');
+const User = require('../models/user');
+
 
 
 exports.getProducts = (req, res, next) => {
@@ -115,7 +118,41 @@ exports.postCartDeleteProduct = (req, res, next) => {
 };
 
 exports.postOrders = (req, res, next) => {
+let fetchedCart ; 
+Cart.findOne({where : {userId :req.userId}})
+.then(cart  => {
+  fetchedCart = cart ;
+  return cart.getProducts();
+})
+.then(products => {
+  return Order.create({
+    userId : req.userId
+  })
+  .then(order => {
+    order.addProducts(
+      products.map(product =>{
+        product.orderItem = {quantity : product.cartItem.quantity};
+        return product;
+      })
+    )
+  })
+  .catch(err => res.status(403).json(err));
+})
+.then(result => {
+  res.status(200).json({msg: 'Ordered',result : result})
+})
+.catch(err => res.status(403).json(err));
 };
 
 exports.getOrders = (req, res, next) => {
+ User.findByPk(req.userId)
+ .then(userData => {
+   userData.getOrders({include: ['products']})
+   .then(orders => {
+     res.status(200).json(orders)
+   })
+.catch(err => res.status(403).json(err));  
+ })
+.catch(err => res.status(403).json(err));
 };
+
