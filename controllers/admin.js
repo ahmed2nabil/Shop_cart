@@ -1,3 +1,5 @@
+const { validationResult } = require('express-validator/check');
+
 const Product = require('../models/product');
 
 exports.postAddProduct = (req, res, next) => {
@@ -5,6 +7,20 @@ exports.postAddProduct = (req, res, next) => {
   const imageUrl = req.body.imageUrl;
   const price = req.body.price;
   const description = req.body.description;
+
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    console.log(errors.array());
+    return res.status(422).json( {
+      product: {
+        title: title,
+        imageUrl: imageUrl,
+        price: price,
+        description: description
+      },
+      validationErrors: errors.array()
+    });
+  }
 Product.create({
     title : title,
     price : price,
@@ -26,6 +42,20 @@ exports.putEditProduct = (req, res, next) => {
   const updatedPrice = req.body.price;
   const updatedImageUrl = req.body.imageUrl;
   const updatedDesc = req.body.description;
+
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).json({
+      product: {
+        title: updatedTitle,
+        imageUrl: updatedImageUrl,
+        price: updatedPrice,
+        description: updatedDesc,
+        _id: prodId
+      },
+      validationErrors: errors.array()
+    });
+  }
 Product.findByPk(prodId)
 .then(prod => {
   if(req.userId !== prod.userId){
