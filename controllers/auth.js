@@ -4,14 +4,39 @@ const cart = require("../models/cart");
 
 const bcrypt = require('bcryptjs');
 const jwt    = require('jsonwebtoken');
+const nodemailer = require('nodemailer');
+const sendgridTransport = require('nodemailer-sendgrid-transport');
+const {validationResult} =require('express-validator/check');
+
+const transport = nodemailer.createTransport(
+    sendgridTransport({
+        auth : {
+            api_key:'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'
+    }
+    }));
 let userData ;
 const config = require('../util/config');
+const Product = require("../models/product");
+
+
 exports.postSignup = (req,res,next) => {
 const email           = req.body.email;
 const name           = req.body.name;
 const password        = req.body.password;
-const confirmPassword = req.body.confirmPassword;
+var token;
 
+const errors = validationResult(req);
+if (!errors.isEmpty()) {
+  console.log(errors.array());
+  return res.status(422).json({
+    oldInput: {
+      email: email,
+      password: password,
+      confirmPassword: req.body.confirmPassword
+    },
+    validationErrors: errors.array()
+  });
+}
 User.findOne({where : {email : email}})
 .then(userDoc => {
 if(userDoc) {
@@ -32,11 +57,12 @@ return bcrypt.hash(password,12);
   return  userRes.createCart();
 })
 .then(cart => {
-    var token = jwt.sign({id: userData.id },config.secret,{
+ token = jwt.sign({id: userData.id },config.secret,{
         expiresIn : 86400 //expires in 24 hours
     })
-    res.status(200).json({mag :'Signed up successfully', token : token,userId :userData.id,cartId :userData.cartId});
+    res.status(200).json({msg :'Signed up successfully', token : token,userId :userData.id});
 })
+
 .catch(err => {
 next(err);
 })
@@ -45,6 +71,17 @@ next(err);
 exports.postLogin = (req,res,next) => {
     const email = req.body.email;
     const password = req.body.password;
+
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(422).json({
+        oldInput: {
+          email: email,
+          password: password
+        },
+        validationErrors: errors.array()
+      });
+    }
 User.findOne({where: {email : email}})
 .then(user => {
     if(!user){
