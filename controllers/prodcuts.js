@@ -14,7 +14,12 @@ exports.postAddProdcut =  (req, res, next) => {
     }).then(prodData => {
       res.status(200).json({msg : 'Created', product : prodData})
     })
-    .catch(err => {res.status(401).json({msg:err})});
+    .catch(err => {
+      if (!err.statusCode) {
+        err.statusCode = 500;
+      }
+      next(err);
+    });
   };
 
 exports.getProducts = (req, res, next) => {
@@ -22,7 +27,12 @@ Product.findAll({attributes: ['id','title', 'price','imageUrl','description']})
 .then(products => {
   res.status(200).json(products);
 })
-.catch(err => res.status(401).json({msg:err}));
+.catch(err => {
+  if (!err.statusCode) {
+    err.statusCode = 500;
+  }
+  next(err); 
+});
   
   };
 
@@ -43,7 +53,12 @@ exports.putEditProduct = (req,res,next) => {
   .then(result => {
     res.status(301).json({mag: 'Updated Successfully',product : result});
   })
-  .catch(err => res.status(401).json({msg:err}));
+  .catch(err => {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  });
 }
 
 exports.deleteProduct = (req,res,next) => {
@@ -55,6 +70,11 @@ exports.deleteProduct = (req,res,next) => {
     .then(result => {
       res.status(200).json({msg:'Deleted Successfully'})
     })
-  .catch(err => res.status(401).json({msg:err}));
+  .catch(err =>{
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  } );
     
 }

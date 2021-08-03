@@ -10,18 +10,14 @@ const { body } = require('express-validator/check');
 
 const router = express.Router();
 
-// /admin/add-product => GET
-// router.get('/add-product', adminController.getAddProduct);
 
-// /admin/products => GET
 router.get('/products', adminController.getProducts);
 
-// /admin/add-product => POST
-router.post('/add-product',productValidator, verfiyToken,adminController.postAddProduct);
 
-// router.get('/edit-product/:productId', adminController.getEditProduct);
+router.post('/add-product', verfiyToken,productValidator,adminController.postAddProduct);
 
-router.put('/edit-product',productValidator,verfiyToken, adminController.putEditProduct);
+
+router.put('/edit-product',verfiyToken,productValidator, adminController.putEditProduct);
 
 router.delete('/delete-product',verfiyToken, adminController.deleteProduct);
 

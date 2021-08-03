@@ -10,16 +10,9 @@ exports.postAddProduct = (req, res, next) => {
 
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    console.log(errors.array());
-    return res.status(422).json( {
-      product: {
-        title: title,
-        imageUrl: imageUrl,
-        price: price,
-        description: description
-      },
-      validationErrors: errors.array()
-    });
+    const error = new Error('Validation failed, entered data is incorrect.');
+    error.statusCode = 422;
+    throw error;
   }
 Product.create({
     title : title,
@@ -32,7 +25,10 @@ Product.create({
     res.status(201).json({msg: "Product Created"});
   })
   .catch((err) => {
-    res.status(400).json({err:err});
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
   });
 };
 
@@ -45,16 +41,9 @@ exports.putEditProduct = (req, res, next) => {
 
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.status(422).json({
-      product: {
-        title: updatedTitle,
-        imageUrl: updatedImageUrl,
-        price: updatedPrice,
-        description: updatedDesc,
-        _id: prodId
-      },
-      validationErrors: errors.array()
-    });
+    const error = new Error('Validation failed, entered data is incorrect.');
+    error.statusCode = 422;
+    throw error;
   }
 Product.findByPk(prodId)
 .then(prod => {
@@ -67,11 +56,19 @@ prod.description = updatedDesc;
 prod.imageUrl = updatedImageUrl;
  prod.save().then(result => {
   res.status(200).json({msg:'Updated',prod : result})
-}).catch(err => { res.status(404).json(err); })
+}).catch(err => { 
+  if (!err.statusCode) {
+    err.statusCode = 500;
+  }
+  next(err);
+ })
   }
 })
 .catch(err => {
-res.status(404).json(err);
+  if (!err.statusCode) {
+    err.statusCode = 500;
+  }
+  next(err);
 })
 };
 
@@ -90,7 +87,10 @@ Product.findAll()
   res.status(200).json(prods);
 })
 .catch((err)=> {
-  res.status(404).json(err);
+  if (!err.statusCode) {
+    err.statusCode = 500;
+  }
+  next(err);
 });
 };
 
@@ -106,8 +106,18 @@ exports.deleteProduct = (req, res, next) => {
       .then(result => {
         res.status(200).json('DELETED');
       })
-   .catch((err)=> {  res.status(404).json(err); });
+   .catch((err)=> {  
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+    });
     }
   })
- .catch((err)=> {  res.status(404).json(err); });
+ .catch((err)=> {  
+  if (!err.statusCode) {
+    err.statusCode = 500;
+  }
+  next(err);
+  });
 };

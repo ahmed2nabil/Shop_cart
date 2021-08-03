@@ -8,12 +8,12 @@ const nodemailer = require('nodemailer');
 const sendgridTransport = require('nodemailer-sendgrid-transport');
 const {validationResult} =require('express-validator/check');
 
-const transport = nodemailer.createTransport(
-    sendgridTransport({
-        auth : {
-            api_key:'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'
-    }
-    }));
+// const transport = nodemailer.createTransport(
+//     sendgridTransport({
+//         auth : {
+//             api_key:'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'
+//     }
+//     }));
 let userData ;
 const config = require('../util/config');
 const Product = require("../models/product");
@@ -64,7 +64,10 @@ return bcrypt.hash(password,12);
 })
 
 .catch(err => {
-next(err);
+  if (!err.statusCode) {
+    err.statusCode = 500;
+  }
+  next(err);
 })
 } 
 
@@ -102,12 +105,11 @@ User.findOne({where: {email : email}})
     .catch(err => {next(err)})
 })
 .catch(err => {
-    next(err);
+  if (!err.statusCode) {
+    err.statusCode = 500;
+  }
+  next(err);
 })
-} 
-
-exports.postLogout = (req,res,next) => {
-res.status(200).json(req.userId)
 } 
 
 exports.postReset = (req,res,next) => {

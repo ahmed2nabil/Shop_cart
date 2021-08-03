@@ -18,7 +18,10 @@ exports.getProducts = (req, res, next) => {
     res.status(200).json(prods);
   })
   .catch((err)=> {
-    res.status(404).json(err);
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
   });
 };
 
@@ -34,7 +37,10 @@ exports.getProduct = (req, res, next) => {
   res.status(200).json(prod);
     })
     .catch((err)=> {
-      res.status(404).json(err);
+      if (!err.statusCode) {
+        err.statusCode = 500;
+      }
+      next(err);
     });
 
 };
@@ -51,7 +57,12 @@ exports.getIndex = (req, res, next) => {
     });
     res.status(200).json(prods);
   })
-  .catch((err)=> {res.status(404).json(err); });
+  .catch((err)=> {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+   });
 };
 
 exports.getCart = (req, res, next) => {
@@ -62,9 +73,19 @@ exports.getCart = (req, res, next) => {
         .then(products => {
           res.status(200).json(products);
                 })
-        .catch((err)=> {res.status(404).json(err); });
+        .catch((err)=> {
+          if (!err.statusCode) {
+            err.statusCode = 500;
+          }
+          next(err);
+         });
     })
-    .catch((err)=> {res.status(404).json(err); });
+    .catch((err)=> {
+      if (!err.statusCode) {
+        err.statusCode = 500;
+      }
+      next(err);
+     });
 };
 
 exports.postCart = (req, res, next) => {
@@ -97,7 +118,12 @@ Cart.findOne({where :{userId : req.userId}})
 .then(data => {
   res.status(200).json({msg : "added to the Cart",data:data});
 })
-.catch(err => { res.status(403).json(err)})
+.catch(err => {
+  if (!err.statusCode) {
+    err.statusCode = 500;
+  }
+  next(err);
+})
 
 };
 
@@ -114,7 +140,12 @@ exports.postCartDeleteProduct = (req, res, next) => {
     .then(result => {
       res.redirect('/cart');
     })
-    .catch(err => console.log(err));
+    .catch(err => {
+      if (!err.statusCode) {
+        err.statusCode = 500;
+      }
+      next(err);
+    });
 };
 
 exports.postOrders = (req, res, next) => {
@@ -136,12 +167,22 @@ Cart.findOne({where : {userId :req.userId}})
       })
     )
   })
-  .catch(err => res.status(403).json(err));
+  .catch(err =>{
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  });
 })
 .then(result => {
   res.status(200).json({msg: 'Ordered',result : result})
 })
-.catch(err => res.status(403).json(err));
+.catch(err => {
+  if (!err.statusCode) {
+    err.statusCode = 500;
+  }
+  next(err);
+});
 };
 
 exports.getOrders = (req, res, next) => {
@@ -151,8 +192,18 @@ exports.getOrders = (req, res, next) => {
    .then(orders => {
      res.status(200).json(orders)
    })
-.catch(err => res.status(403).json(err));  
+.catch(err => {
+  if (!err.statusCode) {
+    err.statusCode = 500;
+  }
+  next(err);
+});  
  })
-.catch(err => res.status(403).json(err));
+.catch(err =>{
+  if (!err.statusCode) {
+    err.statusCode = 500;
+  }
+  next(err);
+});
 };
 
