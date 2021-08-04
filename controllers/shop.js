@@ -4,9 +4,18 @@ const Order = require('../models/order');
 const User = require('../models/user');
 
 
+const ITEMS_PER_PAGE = 2;
+
+
 
 exports.getProducts = (req, res, next) => {
-  Product.findAll()
+  const page = +req.query.page || 1;
+  let totalItems;
+  Product.count()
+  .then(numProds=> {
+    totalItems = numProds;
+   return Product.findAll({ offset: (page - 1) * ITEMS_PER_PAGE, limit: ITEMS_PER_PAGE  })
+  })
   .then(products => {
     const prods = products.map((products) => {
       return {title: products.title,
@@ -46,7 +55,13 @@ exports.getProduct = (req, res, next) => {
 };
 
 exports.getIndex = (req, res, next) => {
-  Product.findAll()
+  const page = +req.query.page || 1;
+  let totalItems;
+
+  Product.count().then(numProds=> {
+    totalItems = numProds;
+   return Product.findAll({ offset: (page - 1) * ITEMS_PER_PAGE, limit: ITEMS_PER_PAGE  })
+  })
   .then(products => {
     const prods = products.map((products) => {
       return {title: products.title,
@@ -55,7 +70,7 @@ exports.getIndex = (req, res, next) => {
         price : products.price
       };
     });
-    res.status(200).json(prods);
+    res.status(200).json({prods :prods});
   })
   .catch((err)=> {
     if (!err.statusCode) {

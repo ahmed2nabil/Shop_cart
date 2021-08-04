@@ -4,16 +4,10 @@ const cart = require("../models/cart");
 
 const bcrypt = require('bcryptjs');
 const jwt    = require('jsonwebtoken');
-const nodemailer = require('nodemailer');
-const sendgridTransport = require('nodemailer-sendgrid-transport');
+
 const {validationResult} =require('express-validator/check');
 
-// const transport = nodemailer.createTransport(
-//     sendgridTransport({
-//         auth : {
-//             api_key:
-//     }
-//     }));
+
 let userData ;
 const config = require('../util/config');
 const Product = require("../models/product");
