@@ -1,8 +1,9 @@
 const Sequelize = require('sequelize');
 
-const sequelize = new Sequelize('node-complete', 'root', 'nodecomplete', {
+//mysql://b9132e62374537:26d70167@us-cdbr-east-04.cleardb.com/heroku_2a753bf0f0af225?reconnect=true
+const sequelize = new Sequelize('heroku_2a753bf0f0af225', 'b9132e62374537', '26d70167', {
   dialect: 'mysql',
-  host: 'localhost'
+  host: 'us-cdbr-east-04.cleardb.com'
 });
 
 module.exports = sequelize;
