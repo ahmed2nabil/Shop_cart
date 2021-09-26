@@ -54,11 +54,7 @@ User.hasMany(Order);
 Order.belongsToMany(Product, {through:OrderItem});
 Product.belongsToMany(Order, {through:OrderItem});
 
-sequelize
-.sync()
-.then(res => {
-    app.listen(3000);
-})
-.catch(err => {
-    console.log(err);
-})
+
+app.listen(3000,() => {
+    console.log("Server Start running");
+});
