@@ -13,6 +13,7 @@ const sequelize = require('./util/database');
 
 const app = express();
 
+const PORT = process.env.PORT || 3000;
 const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
 const authRoutes = require('./routes/auth');
@@ -62,6 +63,6 @@ Order.belongsToMany(Product, {through:OrderItem});
 Product.belongsToMany(Order, {through:OrderItem});
 
 
-app.listen(3000,() => {
+app.listen(PORT,() => {
     console.log("Server Start running");
 });
