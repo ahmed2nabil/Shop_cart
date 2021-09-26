@@ -3,6 +3,10 @@
 const path = require('path');
 
 const express = require('express');
+const helmet    = require("helmet");
+const compression = require("compression");
+const cors      = require("cors");
+require('express-async-errors');
 
 const errorController = require('./controllers/error');
 const sequelize = require('./util/database');
@@ -33,6 +37,9 @@ app.use((req,res,next)=> {
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
     next();
 })
+app.use(helmet());
+app.use(compression());
+app.use(cors());
 
 app.use('/admin', adminRoutes);
 app.use(shopRoutes);
