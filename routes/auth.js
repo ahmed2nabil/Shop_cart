@@ -8,7 +8,7 @@ const {signupValidator,loginValidator} = require('../middlewares/validator');
 const router = express.Router();
 
 
-router.post('/signup',signupValidator,authControllers.postSignup);
+router.post('/signup',authControllers.postSignup);
 
 router.post('/login',loginValidator,authControllers.postLogin);
 

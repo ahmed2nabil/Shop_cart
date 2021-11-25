@@ -7,68 +7,56 @@ const jwt    = require('jsonwebtoken');
 
 const {validationResult} =require('express-validator/check');
 
-
-let userData ;
 const config = require('../util/config');
-const Product = require("../models/product");
+// const Product = require("../models/product");
 
-
-exports.postSignup = (req,res,next) => {
+const dbConnection = require("../database/connection")
+const queryList = require("../database/queries").queryList;
+exports.postSignup = async (req,res,next) => {
 const email           = req.body.email;
-const name           = req.body.name;
+const username           = req.body.username;
 const password        = req.body.password;
-var token;
-
-const errors = validationResult(req);
-if (!errors.isEmpty()) {
-  console.log(errors.array());
-  return res.status(422).json({
-    oldInput: {
-      email: email,
-      password: password,
-      confirmPassword: req.body.confirmPassword
-    },
-    validationErrors: errors.array()
-  });
+/**
+ *  check the validation
+ * check if email user is already exists
+ * create user if not exists
+ * create cart for that user id
+ * send the response
+ */
+// const errors = validationResult(req);
+// if (!errors.isEmpty()) {
+//   console.log(errors.array());
+//   return res.status(422).json({
+//     validationErrors: errors.array()
+//   });
+// }
+const userDoc = await dbConnection.dbQuery(queryList.FIND_USER_QUERY, [email]) 
+if(userDoc.rows.length) {
+    return res.status(403).json('Email is already exists');
 }
-User.findOne({where : {email : email}})
-.then(userDoc => {
-if(userDoc) {
-    res.status(403).json('Email is already exists');
-}
-return bcrypt.hash(password,12);
+const hashedPassword = await bcrypt.hash(password,12);
 
-})
-.then(hashedPassword => {
-    return User.create({
-        email : email,
-        password : hashedPassword,
-        name : name
-    });
-})
-.then(userRes => {
-    userData = userRes;
-  return  userRes.createCart();
-})
-.then(cart => {
- token = jwt.sign({id: userData.id },config.secret,{
-        expiresIn : 86400 //expires in 24 hours
+const newUser = await dbConnection.dbQuery(queryList.ADD_USER_QUERY,[username, password, email])
+console.log
+if(!newUser) {
+  return res.status(400).json({err: "User created failed"})
+}
+const userId = newUser.rows[0].user_id;
+ let token = jwt.sign({id: userId},config.SECRET,{
+        expiresIn : '3h' //expires in 24 hours
     })
-    res.status(200).json({msg :'Signed up successfully', token : token,userId :userData.id});
-})
-
-.catch(err => {
-  if (!err.statusCode) {
-    err.statusCode = 500;
-  }
-  next(err);
-})
+    res.status(200).json({msg :'Signed up successfully', token : token,UserID :JSON.stringify(userId)});
 } 
 
 exports.postLogin = (req,res,next) => {
     const email = req.body.email;
     const password = req.body.password;
-
+/**
+ * check the validation
+ * check if user email exists
+ * check matching password
+ * send the token
+ */
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(422).json({

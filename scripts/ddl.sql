@@ -10,7 +10,6 @@ CREATE SCHEMA scp;
 
 CREATE TABLE scp.user (
 	user_id serial4 NOT NULL,
-	user_name varchar(100) NOT NULL,
 	username varchar(100) NOT NULL,
 	password varchar(100) NOT NULL,
 	email varchar(355) NOT NULL,
