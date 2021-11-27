@@ -17,11 +17,11 @@ CREATE TABLE scp.user (
 );
 
 CREATE TABLE scp.product (
-	product_id serial4 NOT NULL,
-	product_title varchar(100) NOT NULL,
-	product_ price int4 NOT NULL,
-	product_imageUrl varchar(100) NOT NULL,
-	product_description varchar(355) NOT NULL,
+	id serial4 NOT NULL,
+	title varchar(100) NOT NULL,
+	price int4 NOT NULL,
+	imageUrl varchar(100) NOT NULL,
+	description varchar(355) NOT NULL,
 	CONSTRAINT product_pkey PRIMARY KEY (product_id)
 );
 

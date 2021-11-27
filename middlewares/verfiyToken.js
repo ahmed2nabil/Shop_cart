@@ -14,7 +14,7 @@ exports.verfiyToken = (req,res,next) => {
 
 if(!token) 
 return res.status(403).json({msg: "No token provided"});
-jwt.verify(token,config.secret,function(err, decoded) {
+jwt.verify(token,config.SECRET,function(err, decoded) {
     if(err) return res.status(401).json({msg: "Unauthorized"});
 
     req.userId = decoded.id;

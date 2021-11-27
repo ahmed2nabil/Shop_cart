@@ -13,7 +13,7 @@ const errorController = require('./controllers/error');
 const app = express();
 
 const PORT = process.env.PORT || 3000;
-// const adminRoutes = require('./routes/admin');
+const adminRoutes = require('./routes/admin');
 // const shopRoutes = require('./routes/shop');
 const authRoutes = require('./routes/auth');
 
@@ -33,7 +33,7 @@ app.use(helmet());
 app.use(compression());
 app.use(cors());
 
-// app.use('/admin', adminRoutes);
+app.use('/admin', adminRoutes);
 // app.use(shopRoutes);
 app.use(authRoutes);
 app.use(errorController.get404);

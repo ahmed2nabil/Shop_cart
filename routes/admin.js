@@ -14,10 +14,10 @@ const router = express.Router();
 router.get('/products', adminController.getProducts);
 
 
-router.post('/add-product', verfiyToken,productValidator,adminController.postAddProduct);
+router.post('/add-product', verfiyToken, adminController.postAddProduct);
 
 
-router.put('/edit-product',verfiyToken,productValidator, adminController.putEditProduct);
+router.put('/edit-product',verfiyToken, adminController.putEditProduct);
 
 router.delete('/delete-product',verfiyToken, adminController.deleteProduct);
 

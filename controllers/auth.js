@@ -12,6 +12,7 @@ const config = require('../util/config');
 
 const dbConnection = require("../database/connection")
 const queryList = require("../database/queries").queryList;
+const { emit } = require("nodemon");
 exports.postSignup = async (req,res,next) => {
 const email           = req.body.email;
 const username           = req.body.username;
@@ -36,19 +37,20 @@ if(userDoc.rows.length) {
 }
 const hashedPassword = await bcrypt.hash(password,12);
 
-const newUser = await dbConnection.dbQuery(queryList.ADD_USER_QUERY,[username, password, email])
+const newUser = await dbConnection.dbQuery(queryList.ADD_USER_QUERY,[username, hashedPassword, email])
 console.log
 if(!newUser) {
   return res.status(400).json({err: "User created failed"})
 }
 const userId = newUser.rows[0].user_id;
+const newCart = await dbConnection.dbQuery(queryList.CREATE_CART_USER_QUERY,[userId]);
  let token = jwt.sign({id: userId},config.SECRET,{
         expiresIn : '3h' //expires in 24 hours
     })
     res.status(200).json({msg :'Signed up successfully', token : token,UserID :JSON.stringify(userId)});
 } 
 
-exports.postLogin = (req,res,next) => {
+exports.postLogin = async (req,res,next) => {
     const email = req.body.email;
     const password = req.body.password;
 /**
@@ -57,41 +59,30 @@ exports.postLogin = (req,res,next) => {
  * check matching password
  * send the token
  */
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(422).json({
-        oldInput: {
-          email: email,
-          password: password
-        },
-        validationErrors: errors.array()
-      });
+    // const errors = validationResult(req);
+    // if (!errors.isEmpty()) {
+    //   return res.status(422).json({
+    //     oldInput: {
+    //       email: email,
+    //       password: password
+    //     },
+    //     validationErrors: errors.array()
+    //   });
+    // }
+ const user = await dbConnection.dbQuery(queryList.FIND_USER_QUERY,[email])
+ 
+    if(!user.rows){
+       return res.status(401).json({msg : 'Invalid Email or Password'})
     }
-User.findOne({where: {email : email}})
-.then(user => {
-    if(!user){
-        res.status(401).json({msg : 'Invalid Email or Password'})
-    }
-    userData = user;
-    bcrypt.compare(password,user.password)
-    .then(resmatching => {
-        if(resmatching) {
-            var token = jwt.sign({id: userData.id },config.secret,{
+ const passwordmatch = await   bcrypt.compare(password,user.rows[0].password)
+        if(passwordmatch) {
+            var token = jwt.sign({id: user.rows[0].user_id },config.SECRET,{
                 expiresIn : 86400 //expires in 24 hours
             })
             res.status(200).json({msg : 'Succesfully Logged In',token : token})
         } else {
         res.status(401).json({msg : 'Invalid Email or Password'})  
         }      
-    })
-    .catch(err => {next(err)})
-})
-.catch(err => {
-  if (!err.statusCode) {
-    err.statusCode = 500;
-  }
-  next(err);
-})
 } 
 
 exports.postReset = (req,res,next) => {
