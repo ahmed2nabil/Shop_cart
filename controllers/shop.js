@@ -1,23 +1,17 @@
-const Product = require('../models/product');
-const Cart = require('../models/cart');
-const Order = require('../models/order');
-const User = require('../models/user');
-
+const dbConnection = require("../database/connection");
+const queryList = require("../database/queries").queryList;
 
 const ITEMS_PER_PAGE = 2;
 
 
 
-exports.getProducts = (req, res, next) => {
+exports.getProducts = async (req, res, next) => {
   const page = +req.query.page || 1;
   let totalItems;
-  Product.count()
-  .then(numProds=> {
+  const numProds = await dbConnection.dbQuery(queryList.PRODUCT_COUNT_QUERY);
     totalItems = numProds;
-   return Product.findAll({ offset: (page - 1) * ITEMS_PER_PAGE, limit: ITEMS_PER_PAGE  })
-  })
-  .then(products => {
-    const prods = products.map((products) => {
+ const products = await dbConnection.dbQuery(queryList.GET_ALL_PROUDCTS_PER_PAGE_QUERY,[ITEMS_PER_PAGE, (page - 1) * ITEMS_PER_PAGE])
+    const prods = products.rows.map((products) => {
       return {title: products.title,
         description : products.description,
         imageUrl : products.imageUrl,
@@ -25,60 +19,24 @@ exports.getProducts = (req, res, next) => {
       };
     });
     res.status(200).json(prods);
-  })
-  .catch((err)=> {
-    if (!err.statusCode) {
-      err.statusCode = 500;
-    }
-    next(err);
-  });
-};
 
-exports.getProduct = (req, res, next) => {
+}
+
+exports.getProduct = async (req, res, next) => {
   const prodId = req.params.productId;
-  Product.findByPk(prodId)
-  .then((product) => {
-  const prod =  {title: product.title,
-      description : product.description,
-      imageUrl : product.imageUrl,
-      price : product.price
+ const product = await dbConnection.dbQuery(queryList.GET_PROUDCT_DETAILS_QUERY,[prodId]);
+ if(!product.rows.length) {
+   return res.status(404).json({msg: "Product not exists"})
+ } 
+ const prod =  {title: product.rows[0].title,
+      description : product.rows[0].description,
+      imageUrl : product.rows[0].image_url,
+      price : product.rows[0].price
     };
   res.status(200).json(prod);
-    })
-    .catch((err)=> {
-      if (!err.statusCode) {
-        err.statusCode = 500;
-      }
-      next(err);
-    });
 
-};
+}
 
-exports.getIndex = (req, res, next) => {
-  const page = +req.query.page || 1;
-  let totalItems;
-
-  Product.count().then(numProds=> {
-    totalItems = numProds;
-   return Product.findAll({ offset: (page - 1) * ITEMS_PER_PAGE, limit: ITEMS_PER_PAGE  })
-  })
-  .then(products => {
-    const prods = products.map((products) => {
-      return {title: products.title,
-        description : products.description,
-        imageUrl : products.imageUrl,
-        price : products.price
-      };
-    });
-    res.status(200).json({prods :prods});
-  })
-  .catch((err)=> {
-    if (!err.statusCode) {
-      err.statusCode = 500;
-    }
-    next(err);
-   });
-};
 
 exports.getCart = (req, res, next) => {
   Cart.findOne({where: {userId : req.userId}})

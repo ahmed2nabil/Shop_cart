@@ -6,7 +6,7 @@ const shopController = require('../controllers/shop');
 const { verfiyToken } = require('../middlewares/verfiyToken');
 const router = express.Router();
 
-router.get('/', shopController.getIndex);
+router.get('/', shopController.getProducts);
 
 router.get('/products', shopController.getProducts);
 
