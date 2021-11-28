@@ -38,87 +38,53 @@ exports.getProduct = async (req, res, next) => {
 }
 
 
-exports.getCart = (req, res, next) => {
-  Cart.findOne({where: {userId : req.userId}})
-    .then(cart => {
-      return cart
-        .getProducts()
-        .then(products => {
-          res.status(200).json(products);
-                })
-        .catch((err)=> {
-          if (!err.statusCode) {
-            err.statusCode = 500;
-          }
-          next(err);
-         });
-    })
-    .catch((err)=> {
-      if (!err.statusCode) {
-        err.statusCode = 500;
-      }
-      next(err);
-     });
-};
+exports.getCart = async(req, res, next) => {
 
-exports.postCart = (req, res, next) => {
+const cart = await dbConnection.dbQuery(queryList.GET_CART_QUERY,[req.userId]);
+
+const products = await dbConnection.dbQuery(queryList.GET_PRODUCTS_FROM_USER_CART_QUERY,[cart.rows[0].cart_id])
+
+          res.status(200).json({products : products.rows});
+ 
+}
+
+exports.postCart = async (req, res, next) => {
+  /**
+   * find the cart related to the user
+   * find the products item in the cart
+   * add the product to the cart and increase the qunantity if exists 
+   * 
+   */
 const prodId  = req.body.productId
   let fetchedCart;
 let newQuantity = 1;
-Cart.findOne({where :{userId : req.userId}})
-.then(cart => {
+let product ;
+const cart = await dbConnection.dbQuery(queryList.GET_CART_QUERY,[req.userId]);
 
-  fetchedCart = cart;
-  return cart.getProducts({where : { id : prodId}});
-})
-.then(products => {
-  let product;
-  if(products.length > 0){
-    product = products[0];
+const products = await dbConnection.dbQuery(queryList.GET_PRODUCTS_FROM_CART_QUERY,[prodId])
+  if(products.rows.length > 0){
+    product = products.rows[0];
   }
   if(product) {
-    const oldQuantity = product.cartItem.quantity;
+    const oldQuantity = product.quantity;
     newQuantity += oldQuantity;
-  return product;
-  } 
-  return Product.findByPk(prodId)
-})
-.then(product => {
-  return fetchedCart.addProduct(product , {
-    through : {quantity : newQuantity}
-  })
-})
-.then(data => {
-  res.status(200).json({msg : "added to the Cart",data:data});
-})
-.catch(err => {
-  if (!err.statusCode) {
-    err.statusCode = 500;
+ const data = await dbConnection.dbQuery(queryList.UPDATE_CARTITEMS_QUERY,[newQuantity, cart.rows[0].cart_id, prodId])
+
+  } else {
+   product =  await dbConnection.dbQuery(queryList.GET_PROUDCT_DETAILS_QUERY,[prodId]);
+ const data = await dbConnection.dbQuery(queryList.INSERT_INTO_CARTITEMS_QUERY,[newQuantity,cart.rows[0].cart_id,prodId])
   }
-  next(err);
-})
+  res.status(200).json({msg : "added to the Cart"});
 
-};
+}
 
-exports.postCartDeleteProduct = (req, res, next) => {
+exports.postCartDeleteProduct = async (req, res, next) => {
   const prodId = req.body.productId;
- Cart.findOne({where : {userId : req.userId}})
-    .then(cart => {
-      return cart.getProducts({ where: { id: prodId } });
-    })
-    .then(products => {
-      const product = products[0];
-      return product.cartItem.destroy();
-    })
-    .then(result => {
-      res.redirect('/cart');
-    })
-    .catch(err => {
-      if (!err.statusCode) {
-        err.statusCode = 500;
-      }
-      next(err);
-    });
+const cart = await dbConnection.dbQuery(queryList.GET_CART_QUERY,[req.userId]);
+
+const products = await dbConnection.dbQuery(queryList.DELETE_PRODUCT_FROM_CARTITEM_QUERY,[prodId, cart.rows[0].cart_id])
+
+      res.status(200).json({msg: "DELETED SUCCESSFULLY"});
 };
 
 exports.postOrders = (req, res, next) => {

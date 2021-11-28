@@ -12,7 +12,6 @@ const errorController = require('./controllers/error');
 
 const app = express();
 
-const PORT = process.env.PORT || 3000;
 const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
 const authRoutes = require('./routes/auth');
