@@ -8,7 +8,7 @@ const compression = require("compression");
 const cors      = require("cors");
 require('express-async-errors');
 
-const errorController = require('./controllers/error');
+const errorMiddelware = require("./middlewares/error")
 
 const app = express();
 
@@ -35,7 +35,5 @@ app.use(cors());
 app.use('/admin', adminRoutes);
 app.use(shopRoutes);
 app.use(authRoutes);
-app.use(errorController.get404);
-
-
+app.use(errorMiddelware);
 module.exports = app;
