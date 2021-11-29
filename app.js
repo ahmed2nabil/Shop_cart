@@ -9,7 +9,7 @@ const cors      = require("cors");
 require('express-async-errors');
 
 const errorMiddelware = require("./middlewares/error")
-
+const NotFoundMiddlware = require("./middlewares/notFound")
 const app = express();
 
 const adminRoutes = require('./routes/admin');
@@ -32,8 +32,9 @@ app.use(helmet());
 app.use(compression());
 app.use(cors());
 
-app.use('/admin', adminRoutes);
-app.use(shopRoutes);
-app.use(authRoutes);
+app.use('/api/v1/admin', adminRoutes);
+app.use('/api/v1',shopRoutes);
+app.use('/api/v1',authRoutes);
 app.use(errorMiddelware);
+app.use(NotFoundMiddlware);
 module.exports = app;

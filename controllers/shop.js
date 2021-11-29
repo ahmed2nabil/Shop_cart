@@ -1,3 +1,4 @@
+'use strict'
 const dbConnection = require("../database/connection");
 const queryList = require("../database/queries").queryList;
 
