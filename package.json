@@ -25,6 +25,7 @@
     "helmet": "^4.6.0",
     "jsonwebtoken": "^8.5.1",
     "pg": "^8.7.1",
-    "pg-format": "^1.0.4"
+    "pg-format": "^1.0.4",
+    "winston": "^3.3.3"
   }
 }
