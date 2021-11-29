@@ -3,6 +3,7 @@ const queryList = require("../database/queries").queryList;
 
 const ITEMS_PER_PAGE = 2;
 
+const format = require("pg-format");
 
 
 exports.getProducts = async (req, res, next) => {
@@ -87,62 +88,30 @@ const products = await dbConnection.dbQuery(queryList.DELETE_PRODUCT_FROM_CARTIT
       res.status(200).json({msg: "DELETED SUCCESSFULLY"});
 };
 
-exports.postOrders = (req, res, next) => {
+exports.postOrders = async (req, res, next) => {
 let fetchedCart ; 
-Cart.findOne({where : {userId :req.userId}})
-.then(cart  => {
-  fetchedCart = cart ;
-  return cart.getProducts();
-})
-.then(products => {
-  return Order.create({
-    userId : req.userId
-  })
-  .then(order => {
-    order.addProducts(
-      products.map(product =>{
-        product.orderItem = {quantity : product.cartItem.quantity};
-        return product;
-      })
-    )
-  })
-  .catch(err =>{
-    if (!err.statusCode) {
-      err.statusCode = 500;
-    }
-    next(err);
-  });
-})
-.then(result => {
-  res.status(200).json({msg: 'Ordered',result : result})
-})
-.catch(err => {
-  if (!err.statusCode) {
-    err.statusCode = 500;
-  }
-  next(err);
-});
-};
+const cart = await dbConnection.dbQuery(queryList.GET_CART_QUERY,[req.userId]);
 
-exports.getOrders = (req, res, next) => {
- User.findByPk(req.userId)
- .then(userData => {
-   userData.getOrders({include: ['products']})
-   .then(orders => {
-     res.status(200).json(orders)
-   })
-.catch(err => {
-  if (!err.statusCode) {
-    err.statusCode = 500;
-  }
-  next(err);
-});  
- })
-.catch(err =>{
-  if (!err.statusCode) {
-    err.statusCode = 500;
-  }
-  next(err);
-});
-};
+const products = await dbConnection.dbQuery(queryList.GET_PRODUCTS_FROM_USER_CART_QUERY,[cart.rows[0].cart_id])
+ 
+const order = await dbConnection.dbQuery(queryList.INSERT_INTO_ORDER_QUERY,[req.userId]);
+
+const productsArr = products.rows.map(product =>{
+  return [ Number(product.quantity),Number(order.rows[0].order_id),Number(product.product_id)]
+})
+
+const result = await dbConnection.dbQuery(format(queryList.INSERT_PRODUCT_INTO_ORDER_ITEMS, productsArr))
+const deleteItemsFromCart = await dbConnection.dbQuery(queryList.DELETE_ALL_CART_ITEMS,[cart.rows[0].cart_id])
+  res.status(200).json({msg: 'Ordered',result : result.rows})
+}
+
+exports.getOrders = async (req, res, next) => {
+
+  const orders = await dbConnection.dbQuery(queryList.GET_ORDERS_FOR_USER_QUERY,[req.userId]);
+
+  const ordersID = orders.rows.map( order => order.order_id);
+  const productsDetails = await dbConnection.dbQuery(format(queryList.GET_PRODUCTS_ORDERITEMS_QUERY,ordersID));
+
+     res.status(200).json({products : productsDetails.rows})
+}
 
