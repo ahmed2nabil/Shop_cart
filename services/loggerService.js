@@ -13,7 +13,7 @@ class LoggerService {
     constructor(route) {
         this.route = route;
         const logger = winston.createLogger({
-            level: 'info',
+            levels: winston.config.syslog.levels,
             format: winston.format.printf(info => {
                 let message = `${dateFormat()} | ${info.level.toUpperCase()} |  ${info.message}` ;
                 message = info.obj ? message +  ` data ${JSON.stringify(info.obj)}` : message; 
@@ -21,7 +21,8 @@ class LoggerService {
             }),
             transports: [
                 new winston.transports.Console(),
-                new winston.transports.File({ filename:  `${process.env.LOG_FILE_PATH} / ${route}.log` }),
+                new winston.transports.File({ filename:  `${process.env.LOG_FILE_PATH} / ${route}.log` , level:'info'}),
+                new winston.transports.File({ filename:  `${process.env.LOG_FILE_PATH} / ${route}.log` , level:'error'})
             ],
           });
           this.logger = logger;
@@ -33,17 +34,17 @@ class LoggerService {
         this.logger.log('info', message ,{obj});
     }
     async error(message) {
-        this.logger.log('error '+ message);
+        this.logger.log('error', message);
     }
     async error(message, obj) {
-        this.logger.log('error '+ message,{obj});
+        this.logger.log('error', message,{obj});
     }
     async debug(message) {
-        this.logger.log('debug '+ message);
+        this.logger.log('debug', message);
     }
     async debug(message, obj) {
-        this.logger.log('debug '+ message,{obj});
+        this.logger.log('debug', message,{obj});
     }
 }
-
+ 
 module.exports = LoggerService;
