@@ -14,7 +14,9 @@ exports.getProducts = async (req, res, next) => {
     totalItems = numProds;
  const products = await dbConnection.dbQuery(queryList.GET_ALL_PROUDCTS_PER_PAGE_QUERY,[ITEMS_PER_PAGE, (page - 1) * ITEMS_PER_PAGE])
     const prods = products.rows.map((products) => {
-      return {title: products.title,
+      return {
+        id : products.product_id,
+        title: products.title,
         description : products.description,
         imageUrl : products.imageUrl,
         price : products.price

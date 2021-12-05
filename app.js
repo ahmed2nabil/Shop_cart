@@ -6,6 +6,8 @@ const express = require('express');
 const helmet    = require("helmet");
 const compression = require("compression");
 const cors      = require("cors");
+const swaggerUI = require('swagger-ui-express');
+const swaggerDocument = require('./swagger.json');
 require('express-async-errors');
 
 const errorMiddelware = require("./middlewares/error")
@@ -28,6 +30,7 @@ app.use((req,res,next)=> {
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
     next();
 })
+app.use('/api-docs',swaggerUI.serve,swaggerUI.setup(swaggerDocument));
 app.use(helmet());
 app.use(compression());
 app.use(cors());

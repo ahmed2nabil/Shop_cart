@@ -1,0 +1,129 @@
+{
+    "openapi": "3.0.3",
+    "info": {
+      "version": "1.0.0",
+      "title": "Shop Cart API",
+      "description": "E-commerce backend api to order items",
+      "license": {
+        "name": "Ahmed Nabil",
+        "email" : "ahmednabl992@gmail.com",
+        "url": ""
+      }
+    },
+    "host": "http://localhost:3000/api/v1",
+    "servers" :[
+        {
+            "url" : "http://localhost:3000/api/v1",
+            "description" : "local server for development",
+            "variables" : {}
+        }
+    ],
+    "basePath": "/",
+    "tags": [
+        {
+            "name": "Products",
+            "description": "Everything about products"
+        },
+        {
+            "name": "Orders",
+            "description": "Everything about orders"
+        },
+        {
+        "name": "Carts",
+        "description": "Everything about Carts"
+      }
+    ],
+    "schemes": [
+      "http"
+    ],
+    "consumes": [
+      "application/json"
+    ],
+    "produces": [
+      "application/json"
+    ],
+    "paths": {
+        "/products": {
+            "get": {
+                "tags" : ["Products"],
+                "description": "Returns all Products from the system that the user has access to",
+                "produces": [
+                "application/json"
+                ],
+                "responses": {
+                "200": {
+                    "description": "A list of prodcuts.",
+                    "schema": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/products"
+                    }
+                    }
+                }
+                }
+            }
+        },
+        "/products/{productId}": {
+            "get": {
+                "tags" :["Products"],
+                "description": "Returns One Product Details",
+                "parameters": [
+                    {
+                        "name": "productId",
+                        "in": "path", 
+                        "schema": {
+                          "type" : "string"
+                        },
+                        "style" : "form",
+                        "required": true, 
+                        "description": "Id of product to get detials"
+                    }
+                ],
+                "produces": [
+                "application/json"
+                ],
+                "responses": {
+                "200": {
+                    "description": "A detials of prodcut.",
+                    "schema": {
+                    "type": "object",
+                    "items": {
+                        "$ref": "#/definitions/products/productId"
+                    }
+                    }
+                }
+                }
+            }
+        }
+    },
+    "definitions":{
+        "product" : {
+            "required" : [
+                "title",
+                "description",
+                "imageUrl",
+                "price"
+            ],
+            "properties": {
+                "productId": {
+                    "type" : "integer"
+                },
+                "title" : {
+                    "type" : "string"
+                },
+                "description" : {
+                    "type" : "string"
+                },
+                "imageUrl" : {
+                    "type" : "string"
+                },
+                "price" : {
+                    "type" : "integer"
+                }
+            }
+        },
+        "products" : {
+            "$ref": "#/definitions/product"
+        }
+    }   
+}
