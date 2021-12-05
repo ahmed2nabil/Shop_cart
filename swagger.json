@@ -21,6 +21,10 @@
     "basePath": "/",
     "tags": [
         {
+            "name" : "User",
+            "description" : "Everything about users"
+        },
+        {
             "name": "Products",
             "description": "Everything about products"
         },
@@ -43,6 +47,70 @@
       "application/json"
     ],
     "paths": {
+        "/login" : {
+            "post" : {
+                "tags" :["User"],
+                "description" : "to login to the system",
+                "requestBody" : {
+                    "content" : {
+                        "application/json" : {
+                            "schema" : {
+                                "type": "object",
+                                "example": {
+                                  "email": "ahmed@gmail.com",
+                                  "password": "Ahmed123"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses" : {
+                    "200" :{
+                        "description": "User login Successfully"
+                    },
+                    "401" : {
+                        "description" : "Invalid Credentails"
+                    },
+                    "500" : {
+                        "description" : "Server Error"
+                    }
+                }
+            }
+        },
+        "/signup" : {
+            "post" : {
+                "tags" :["User"],
+                "description" : "create accoount in the system",
+                "requestBody" : {
+                    "content" : {
+                        "application/json" : {
+                            "schema" : {
+                                "type": "object",
+                                "example": {
+                                  "email": "ahmed@gmail.com",
+                                  "password": "Ahmed123",
+                                  "username":"ahmed"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses" : {
+                    "200" :{
+                        "description": "User SignUp Successfully"
+                    },
+                    "401" : {
+                        "description" : "Invalid Credentails"
+                    },
+                    "403" : {
+                        "description" : "Email already Exists"
+                    },
+                    "500" : {
+                        "description" : "Server Error"
+                    }
+                }
+            }
+        },
         "/products": {
             "get": {
                 "tags" : ["Products"],
