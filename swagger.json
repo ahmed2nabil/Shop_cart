@@ -56,9 +56,9 @@
                         "application/json" : {
                             "schema" : {
                                 "type": "object",
-                                "example": {
-                                  "email": "ahmed@gmail.com",
-                                  "password": "Ahmed123"
+                                "example":{
+                                    "email" : "test@gmail.com",
+                                    "password" : "test1234"
                                 }
                             }
                         }
