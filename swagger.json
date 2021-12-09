@@ -25,6 +25,10 @@
             "description" : "Everything about users"
         },
         {
+            "name" : "Admin",
+            "description" : "Everything about admins"
+        },
+        {
             "name": "Products",
             "description": "Everything about products"
         },
@@ -113,7 +117,7 @@
         },
         "/products": {
             "get": {
-                "tags" : ["Products"],
+                "tags" : ["Products" , "Admin"],
                 "description": "Returns all Products from the system that the user has access to",
                 "produces": [
                 "application/json"
@@ -131,9 +135,43 @@
                 }
             }
         },
+        "/admin/add-product" : {
+            "post" : {
+                "tags" :["Admin"],
+                "description": "Add  Product",
+                "parameters": [],
+                "produces": [],
+                "requestBody" : {
+                    "content" : {
+                        "application/json" : {
+                            "schema" : {
+                                "type": "object",
+                                "example": {
+                                    "title" : "Shoe 101" ,
+                                    "description" : "this is a Shoe 101" , 
+                                    "imageUrl"  : "anything for test",
+                                    "price" : 9.9
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                "200": {
+                    "description": "A detials of prodcut.",
+                    "schema": {
+                    "type": "object",
+                    "items": {
+                        "$ref": "#/definitions/products"
+                    }
+                    }
+                }
+                }                
+            }
+        },
         "/products/{productId}": {
             "get": {
-                "tags" :["Products"],
+                "tags" :["Products" ,"Admin"],
                 "description": "Returns One Product Details",
                 "parameters": [
                     {
@@ -162,7 +200,69 @@
                 }
                 }
             }
-        }
+        },
+        "/admin/edit-product" : {
+            "put" : {
+                "tags" :["Admin"],
+                "description": "Add  Product",
+                "parameters": [],
+                "produces": [],
+                "requestBody" : {
+                    "content" : {
+                        "application/json" : {
+                            "schema" : {
+                                "type": "object",
+                                "example": {
+                                    "productId" : 2,
+                                    "title" : "Shoe 102" ,
+                                    "description" : "this is a Shoe 102" , 
+                                    "imageUrl"  : "anything for test",
+                                    "price" : 9.9
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                "200": {
+                    "description": "A edit of prodcut successfully.",
+                    "schema": {
+                    "type": "object",
+                    "items": {
+                        "$ref": "#/definitions/products"
+                    }
+                    }
+                }
+                }                
+            }
+            },
+            "/admin//delete-product" : {
+                "delete" : {
+                    "tags" :["Admin"],
+                    "description": "Delete Product ",
+                    "parameters": [
+                        {
+                            "name": "productId",
+                            "in": "path", 
+                            "schema": {
+                              "type" : "string"
+                            },
+                            "style" : "form",
+                            "required": true, 
+                            "description": "Id of product to delete"
+                        }
+                    ],
+                    "produces": [
+                    "application/json"
+                    ],
+                    "responses": {
+                    "200": {
+                        "description": "deleted Successfully.",
+                        "schema": {  }
+                    }
+                    }
+                }
+            }
     },
     "definitions":{
         "product" : {
@@ -193,5 +293,18 @@
         "products" : {
             "$ref": "#/definitions/product"
         }
-    }   
+    } ,
+    "components" : {
+        "securitySchemes" : {
+            "BearerAuth" : {
+                "type" :"http",
+                "scheme" :"bearer",
+                "in": "header",
+                "bearerFormat": "JWT"
+            }
+        }
+    }  ,
+    "security" : [{
+        "BearerAuth" : []
+    }]
 }
