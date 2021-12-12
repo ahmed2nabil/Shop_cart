@@ -16,7 +16,7 @@ router.get('/cart',verfiyToken, shopController.getCart);
 
 router.post('/cart', verfiyToken,shopController.postCart);
 
-router.delete('/cart-delete-item', verfiyToken,shopController.postCartDeleteProduct);
+router.delete('/cart', verfiyToken,shopController.postCartDeleteProduct);
 
 router.get('/orders', verfiyToken ,shopController.getOrders);
 

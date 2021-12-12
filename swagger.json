@@ -33,13 +33,13 @@
             "description": "Everything about products"
         },
         {
-            "name": "Orders",
-            "description": "Everything about orders"
-        },
-        {
         "name": "Carts",
         "description": "Everything about Carts"
-      }
+        },
+        {
+            "name": "Orders",
+            "description": "Everything about orders"
+        }
     ],
     "schemes": [
       "http"
@@ -262,8 +262,114 @@
                     }
                     }
                 }
-            }
-    },
+            },
+            "/cart" : {
+                "get" : {
+                    "tags" :["Carts"],
+                    "description" : "get items of cart for user",
+                    "requestBody" : {         }
+                    },
+                    "responses" : {
+                        "200" :{
+                            "description": "Products in the cart detials"
+                        },
+                        "401" : {
+                            "description" : "Unauhtrized"
+                        },
+                        "500" : {
+                            "description" : "Server Error"
+                        }
+                    },
+                    "post" : {
+                        "tags" :["Carts"],
+                        "description" : "add product in the cart by productId",
+                        "requestBody" : {
+                            "content" : {
+                                "application/json" : {
+                                    "schema" : {
+                                        "type": "object",
+                                        "example": {
+                                          "productId": 3
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "responses" : {
+                            "200" :{
+                                "description": "added to Cart"
+                            },
+                            "401" : {
+                                "description" : " Unauhtrized"
+                            },
+                            "500" : {
+                                "description" : "Server Error"
+                            }
+                        }
+                    },
+                    "delete" : {
+                        "tags" :["Carts"],
+                        "description" : "delete product in the cart by productId",
+                        "requestBody" : {
+                            "content" : {
+                                "application/json" : {
+                                    "schema" : {
+                                        "type": "object",
+                                        "example": {
+                                          "productId": 3
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "responses" : {
+                            "200" :{
+                                "description": "DELETED SUCCESSFULLY"
+                            },
+                            "401" : {
+                                "description" : " Unauhtrized"
+                            },
+                            "500" : {
+                                "description" : "Server Error"
+                            }
+                        }
+                    }
+                },
+                "/orders" : {
+                    "get" : {
+                        "tags" :["Orders"],
+                        "description" : "get orders for user",
+                        "requestBody" : {         }
+                        },
+                        "responses" : {
+                            "200" :{
+                                "description": "Products in the orders detials"
+                            },
+                            "401" : {
+                                "description" : "Unauhtrized"
+                            },
+                            "500" : {
+                                "description" : "Server Error"
+                            }
+                        },
+                        "post" : {
+                            "tags" :["Orders"],
+                            "description" : "make orders by the items in the cart",
+                            "requestBody" : {},
+                            "responses" : {
+                                "200" :{
+                                    "description": "order successfully and delete items from the cart"
+                                },
+                                "401" : {
+                                    "description" : " Unauhtrized"
+                                },
+                                "500" : {
+                                    "description" : "Server Error"
+                                }
+                            }
+                        }
+                    }
+            },
     "definitions":{
         "product" : {
             "required" : [
