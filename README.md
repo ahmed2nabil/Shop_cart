@@ -45,8 +45,4 @@ Shop cart project is about showing  list of products and add items to your cart 
 To Show and Test all endpoints http://localhost:3000/api-docs
 
 ```
-# Project Folder Structure
-```
-
-```
 
