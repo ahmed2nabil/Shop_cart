@@ -4,13 +4,15 @@
   "description": "Complete Node.js Guide",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js",
-    "dev": "nodemon index.js"
+    "start": "cross-env NODE_ENV=production node index.js",
+    "dev": "cross-env NODE_ENV=development nodemon index.js",
+    "test": "cross-env NODE_ENV=test jest --verbose --runInBand"
   },
   "author": "Ahmed Nabil",
   "license": "ISC",
   "devDependencies": {
+    "cross-env": "^7.0.3",
+    "jest": "^27.4.5",
     "nodemon": "^2.0.12"
   },
   "dependencies": {
@@ -26,7 +28,11 @@
     "jsonwebtoken": "^8.5.1",
     "pg": "^8.7.1",
     "pg-format": "^1.0.4",
-    "swagger-ui-express": "^4.1.6",
+    "swagger-ui-express": "^4.2.0",
     "winston": "^3.3.3"
+  },
+  "jest": {
+    "verbose": true,
+    "testEnvironment": "node"
   }
 }
