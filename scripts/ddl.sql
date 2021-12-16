@@ -46,3 +46,29 @@ CREATE TABLE scp.cartItem (
 	quantity int4 NOT NULL,
 	CONSTRAINT cartItem_pkey PRIMARY KEY (cartItem_id)
 );
+
+-- add foreign keys
+-- userId to the product 
+ALTER TABLE scp.product ADD user_id serial4 NOT NULL;
+ALTER TABLE scp.product  ADD CONSTRAINT fk_user_id FOREIGN KEY (user_id) REFERENCES scp.user(user_id);
+
+-- cartId to cart Items
+ALTER TABLE scp.cartitem ADD cart_id serial4 NOT NULL;
+ALTER TABLE scp.cartitem  ADD CONSTRAINT fk_cart_id FOREIGN KEY (cart_id) REFERENCES scp.cart(cart_id);
+
+-- productId to cart Items
+ALTER TABLE scp.cartitem ADD product_id serial4 NOT NULL;
+ALTER TABLE scp.cartitem  ADD CONSTRAINT fk_product_id FOREIGN KEY (product_id) REFERENCES scp.product(product_id);
+
+
+--userId to order
+ALTER TABLE scp."order" ADD user_id serial4 NOT NULL;
+ALTER TABLE scp."order"  ADD CONSTRAINT fk_user_id FOREIGN KEY (user_id) REFERENCES scp.user(user_id);
+
+-- orderId to order Items 
+ALTER TABLE scp.orderitem ADD order_id serial4 NOT NULL;
+ALTER TABLE scp.orderitem  ADD CONSTRAINT fk_order_id FOREIGN KEY (order_id) REFERENCES scp.order(order_id);
+
+--product ID to order Items
+ALTER TABLE scp.orderitem ADD product_id serial4 NOT NULL;
+ALTER TABLE scp.orderitem  ADD CONSTRAINT fk_product_id FOREIGN KEY (product_id) REFERENCES scp.product(product_id);
