@@ -11,9 +11,12 @@
   "author": "Ahmed Nabil",
   "license": "ISC",
   "devDependencies": {
+    "babel-cli": "^6.26.0",
     "cross-env": "^7.0.3",
     "jest": "^27.4.5",
-    "nodemon": "^2.0.12"
+    "nodemon": "^2.0.12",
+    "superagent": "^6.1.0",
+    "supertest": "^6.1.6"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
