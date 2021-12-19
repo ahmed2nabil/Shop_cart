@@ -1,9 +1,9 @@
 'use strict'
 const { Pool } = require('pg');
 require('dotenv').config();
-
+const config = require("../util/config");
 const db_config = {
-    connectionString: process.env.DATABASE_URL,
+    connectionString: config.DATABASE_URL,
     connectionTimeoutMillis: 300,
     idleTimeoutMillis: 200,
     max: 20

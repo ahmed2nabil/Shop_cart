@@ -74,12 +74,12 @@ exports.postLogin = async (req,res,next) => {
     //   });
     // }
  const user = await dbConnection.dbQuery(queryList.FIND_USER_QUERY,[email])
- 
-    if(!user.rows){
+    if(!user.rows.length){
         logger.error("Invalid Email ", JSON.stringify(email))
        return res.status(401).json({msg : 'Invalid Email or Password'})
     }
- const passwordmatch = await   bcrypt.compare(password,user.rows[0].password)
+    
+ const passwordmatch = await bcrypt.compare(password,user.rows[0].password)
         if(passwordmatch) {
             var token = jwt.sign({id: user.rows[0].user_id },config.SECRET,{
                 expiresIn : 86400 //expires in 24 hours
