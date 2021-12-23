@@ -36,7 +36,7 @@ const password        = req.body.password;
 const userDoc = await dbConnection.dbQuery(queryList.FIND_USER_QUERY, [email]) 
 if(userDoc.rows.length) {
     logger.error('User is already exists ', JSON.stringify(userDoc.rows));
-    return res.status(403).json('Email is already exists');
+    return res.status(403).json('Email already exists');
 }
 const hashedPassword = await bcrypt.hash(password,12);
 
